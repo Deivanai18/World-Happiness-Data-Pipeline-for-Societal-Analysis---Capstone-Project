@@ -1,0 +1,92 @@
+scala> val sevendf = spark.sql("select * from caps_proj.HWR2017");
+Loading class `com.mysql.jdbc.Driver'. This is deprecated. The new driver class is `com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
+23/09/21 23:42:21 WARN ObjectStore: Failed to get database global_temp, returning NoSuchObjectException
+sevendf: org.apache.spark.sql.DataFrame = [country: string, hrank: int ... 10 more fields]
+
+scala> sevendf.show
++--------------+-----+------+-----------+----------+-------+-------+--------+--------+----------+---------+-------+
+|       country|hrank|hscore|whiskerhigh|whiskerlow|economy| family|  health| freedom|generosity|    trust|     dr|
++--------------+-----+------+-----------+----------+-------+-------+--------+--------+----------+---------+-------+
+|        Norway|    1| 7.537|    7.59444|   7.47956|1.61646|1.53352|0.796667|0.635423|  0.362012| 0.315964|2.27703|
+|       Denmark|    2| 7.522|    7.58173|   7.46227|1.48238|1.55112|0.792566|0.626007|   0.35528|  0.40077|2.31371|
+|       Iceland|    3| 7.504|    7.62203|   7.38597|1.48063|1.61057|0.833552|0.627163|   0.47554| 0.153527|2.32272|
+|   Switzerland|    4| 7.494|    7.56177|   7.42623|1.56498|1.51691|0.858131|0.620071|  0.290549| 0.367007|2.27672|
+|       Finland|    5| 7.469|    7.52754|   7.41046|1.44357|1.54025|0.809158|0.617951|  0.245483| 0.382612|2.43018|
+|   Netherlands|    6| 7.377|    7.42743|   7.32657|1.50394|1.42894|0.810696|0.585384|   0.47049| 0.282662| 2.2948|
+|        Canada|    7| 7.316|     7.3844|    7.2476| 1.4792|1.48135|0.834558|0.611101|   0.43554| 0.287372|2.18726|
+|   New Zealand|    8| 7.314|    7.37951|   7.24849|1.40571| 1.5482| 0.81676|0.614062|  0.500005| 0.382817|2.04646|
+|        Sweden|    9| 7.284|    7.34409|   7.22391|1.49439|1.47816|0.830875|0.612924|  0.385399| 0.384399|2.09754|
+|     Australia|   10| 7.284|    7.35665|   7.21135|1.48441|1.51004|0.843887|0.601607|  0.477699| 0.301184|2.06521|
+|        Israel|   11| 7.213|    7.27985|   7.14615|1.37538|1.37629|0.838404|0.405989|  0.330083|0.0852421|2.80176|
+|    Costa Rica|   12| 7.079|    7.16811|   6.98989|1.10971| 1.4164|0.759509|0.580132|  0.214613| 0.100107|2.89864|
+|       Austria|   13| 7.006|    7.07067|   6.94133| 1.4871|1.45994|0.815328|0.567766|  0.316472|  0.22106|2.13851|
+| United States|   14| 6.993|    7.07466|   6.91134|1.54626|1.41992|0.774287|0.505741|  0.392579| 0.135639|2.21811|
+|       Ireland|   15| 6.977|    7.04335|   6.91065|1.53571|1.55823|0.809783| 0.57311|  0.427858| 0.298388|1.77387|
+|       Germany|   16| 6.951|    7.00538|   6.89662|1.48792|1.47252|0.798951|0.562511|  0.336269| 0.276732|2.01577|
+|       Belgium|   17| 6.891|    6.95582|   6.82618|1.46378|1.46231|0.818092|0.539771|  0.231503| 0.251343|2.12421|
+|    Luxembourg|   18| 6.863|    6.92369|   6.80231|1.74194|1.45758|0.845089|0.596628|  0.283181| 0.318834|1.61951|
+|United Kingdom|   19| 6.714|    6.78379|   6.64421|1.44163|1.49646|0.805336| 0.50819|  0.492774| 0.265428|1.70414|
+|         Chile|   20| 6.652|    6.73925|   6.56475|1.25278|1.28402| 0.81948|0.376895|  0.326662| 0.082288|2.50959|
++--------------+-----+------+-----------+----------+-------+-------+--------+--------+----------+---------+-------+
+only showing top 20 rows
+
+scala> val countrows = sevendf.count()
+countrows: Long = 154
+
+scala>  println(s"count of rows:$countrows")
+count of rows:154
+
+scala> val nullcounts = sevendf.select(sevendf.columns.map(c => sum(col(c).isNull.cast("int")).alias(c)):_*)
+nullcounts: org.apache.spark.sql.DataFrame = [country: bigint, hrank: bigint ... 10 more fields]
+
+scala> nullcounts.show()
++-------+-----+------+-----------+----------+-------+------+------+-------+----------+-----+---+
+|country|hrank|hscore|whiskerhigh|whiskerlow|economy|family|health|freedom|generosity|trust| dr|
++-------+-----+------+-----------+----------+-------+------+------+-------+----------+-----+---+
+|      0|    0|     0|          0|         0|      0|     0|     0|      0|         0|    0|  0|
++-------+-----+------+-----------+----------+-------+------+------+-------+----------+-----+---+
+
+scala> val deduplicatedDF = sevendf.dropDuplicates()
+deduplicatedDF: org.apache.spark.sql.Dataset[org.apache.spark.sql.Row] = [country: string, hrank: int ... 10 more fields]
+
+scala> val cleanedDF = deduplicatedDF.na.drop()
+cleanedDF: org.apache.spark.sql.DataFrame = [country: string, hrank: int ... 10 more fields]
+
+scala> val numRows = cleanedDF.count()
+numRows: Long = 154  
+
+scala> sevendf.printSchema()
+root
+ |-- country: string (nullable = true)
+ |-- hrank: integer (nullable = true)
+ |-- hscore: float (nullable = true)
+ |-- whiskerhigh: float (nullable = true)
+ |-- whiskerlow: float (nullable = true)
+ |-- economy: float (nullable = true)
+ |-- family: float (nullable = true)
+ |-- health: float (nullable = true)
+ |-- freedom: float (nullable = true)
+ |-- generosity: float (nullable = true)
+ |-- trust: float (nullable = true)
+ |-- dr: float (nullable = true)
+
+scala> val processedData = cleanedDF.withColumnRenamed("dr","DystopiaResidual") .withColumnRenamed("hrank","HappinessRank") .withColumnRenamed("hscore","HappinessScore")
+processedData: org.apache.spark.sql.DataFrame = [country: string, hrank: int ... 10 more fields]
+
+scala> processedData.printSchema()
+root
+ |-- country: string (nullable = true)
+ |-- HappinessRank: integer (nullable = true)
+ |-- HappinessScore: float (nullable = true)
+ |-- whiskerhigh: float (nullable = true)
+ |-- whiskerlow: float (nullable = true)
+ |-- economy: float (nullable = true)
+ |-- family: float (nullable = true)
+ |-- health: float (nullable = true)
+ |-- freedom: float (nullable = true)
+ |-- generosity: float (nullable = true)
+ |-- trust: float (nullable = true)
+ |-- DystopiaResidual: float (nullable = true)
+
+scala> processedData.write .mode("overwrite") .saveAsTable("caps_proj.ProcessedHWR2017")
+

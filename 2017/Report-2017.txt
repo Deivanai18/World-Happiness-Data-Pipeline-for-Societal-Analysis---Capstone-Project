@@ -1,0 +1,387 @@
+scala> val sevendf = spark.sql("select * from caps_proj.HWR2017")
+Loading class `com.mysql.jdbc.Driver'. This is deprecated. The new driver class is `com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
+23/09/23 01:11:59 WARN ObjectStore: Failed to get database global_temp, returning NoSuchObjectException
+sevendf: org.apache.spark.sql.DataFrame = [country: string, hrank: int ... 10 more fields]
+
+scala> sevendf.show
++--------------+-----+------+-----------+----------+-------+-------+--------+--------+----------+---------+-------+
+|       country|hrank|hscore|whiskerhigh|whiskerlow|economy| family|  health| freedom|generosity|    trust|     dr|
++--------------+-----+------+-----------+----------+-------+-------+--------+--------+----------+---------+-------+
+|        Norway|    1| 7.537|    7.59444|   7.47956|1.61646|1.53352|0.796667|0.635423|  0.362012| 0.315964|2.27703|
+|       Denmark|    2| 7.522|    7.58173|   7.46227|1.48238|1.55112|0.792566|0.626007|   0.35528|  0.40077|2.31371|
+|       Iceland|    3| 7.504|    7.62203|   7.38597|1.48063|1.61057|0.833552|0.627163|   0.47554| 0.153527|2.32272|
+|   Switzerland|    4| 7.494|    7.56177|   7.42623|1.56498|1.51691|0.858131|0.620071|  0.290549| 0.367007|2.27672|
+|       Finland|    5| 7.469|    7.52754|   7.41046|1.44357|1.54025|0.809158|0.617951|  0.245483| 0.382612|2.43018|
+|   Netherlands|    6| 7.377|    7.42743|   7.32657|1.50394|1.42894|0.810696|0.585384|   0.47049| 0.282662| 2.2948|
+|        Canada|    7| 7.316|     7.3844|    7.2476| 1.4792|1.48135|0.834558|0.611101|   0.43554| 0.287372|2.18726|
+|   New Zealand|    8| 7.314|    7.37951|   7.24849|1.40571| 1.5482| 0.81676|0.614062|  0.500005| 0.382817|2.04646|
+|        Sweden|    9| 7.284|    7.34409|   7.22391|1.49439|1.47816|0.830875|0.612924|  0.385399| 0.384399|2.09754|
+|     Australia|   10| 7.284|    7.35665|   7.21135|1.48441|1.51004|0.843887|0.601607|  0.477699| 0.301184|2.06521|
+|        Israel|   11| 7.213|    7.27985|   7.14615|1.37538|1.37629|0.838404|0.405989|  0.330083|0.0852421|2.80176|
+|    Costa Rica|   12| 7.079|    7.16811|   6.98989|1.10971| 1.4164|0.759509|0.580132|  0.214613| 0.100107|2.89864|
+|       Austria|   13| 7.006|    7.07067|   6.94133| 1.4871|1.45994|0.815328|0.567766|  0.316472|  0.22106|2.13851|
+| United States|   14| 6.993|    7.07466|   6.91134|1.54626|1.41992|0.774287|0.505741|  0.392579| 0.135639|2.21811|
+|       Ireland|   15| 6.977|    7.04335|   6.91065|1.53571|1.55823|0.809783| 0.57311|  0.427858| 0.298388|1.77387|
+|       Germany|   16| 6.951|    7.00538|   6.89662|1.48792|1.47252|0.798951|0.562511|  0.336269| 0.276732|2.01577|
+|       Belgium|   17| 6.891|    6.95582|   6.82618|1.46378|1.46231|0.818092|0.539771|  0.231503| 0.251343|2.12421|
+|    Luxembourg|   18| 6.863|    6.92369|   6.80231|1.74194|1.45758|0.845089|0.596628|  0.283181| 0.318834|1.61951|
+|United Kingdom|   19| 6.714|    6.78379|   6.64421|1.44163|1.49646|0.805336| 0.50819|  0.492774| 0.265428|1.70414|
+|         Chile|   20| 6.652|    6.73925|   6.56475|1.25278|1.28402| 0.81948|0.376895|  0.326662| 0.082288|2.50959|
++--------------+-----+------+-----------+----------+-------+-------+--------+--------+----------+---------+-------+
+only showing top 20 rows
+
+
+scala> sevendf.printSchema()
+root
+ |-- country: string (nullable = true)
+ |-- hrank: integer (nullable = true)
+ |-- hscore: float (nullable = true)
+ |-- whiskerhigh: float (nullable = true)
+ |-- whiskerlow: float (nullable = true)
+ |-- economy: float (nullable = true)
+ |-- family: float (nullable = true)
+ |-- health: float (nullable = true)
+ |-- freedom: float (nullable = true)
+ |-- generosity: float (nullable = true)
+ |-- trust: float (nullable = true)
+ |-- dr: float (nullable = true)
+
+scala> val countcols = sevendf.columns.length
+countcols: Int = 12
+
+scala> val topHrankseven = sevendf.filter($"Hrank"<=10).show()
++-----------+-----+------+-----------+----------+-------+-------+--------+--------+----------+--------+-------+
+|    country|hrank|hscore|whiskerhigh|whiskerlow|economy| family|  health| freedom|generosity|   trust|     dr|
++-----------+-----+------+-----------+----------+-------+-------+--------+--------+----------+--------+-------+
+|     Norway|    1| 7.537|    7.59444|   7.47956|1.61646|1.53352|0.796667|0.635423|  0.362012|0.315964|2.27703|
+|    Denmark|    2| 7.522|    7.58173|   7.46227|1.48238|1.55112|0.792566|0.626007|   0.35528| 0.40077|2.31371|
+|    Iceland|    3| 7.504|    7.62203|   7.38597|1.48063|1.61057|0.833552|0.627163|   0.47554|0.153527|2.32272|
+|Switzerland|    4| 7.494|    7.56177|   7.42623|1.56498|1.51691|0.858131|0.620071|  0.290549|0.367007|2.27672|
+|    Finland|    5| 7.469|    7.52754|   7.41046|1.44357|1.54025|0.809158|0.617951|  0.245483|0.382612|2.43018|
+|Netherlands|    6| 7.377|    7.42743|   7.32657|1.50394|1.42894|0.810696|0.585384|   0.47049|0.282662| 2.2948|
+|     Canada|    7| 7.316|     7.3844|    7.2476| 1.4792|1.48135|0.834558|0.611101|   0.43554|0.287372|2.18726|
+|New Zealand|    8| 7.314|    7.37951|   7.24849|1.40571| 1.5482| 0.81676|0.614062|  0.500005|0.382817|2.04646|
+|     Sweden|    9| 7.284|    7.34409|   7.22391|1.49439|1.47816|0.830875|0.612924|  0.385399|0.384399|2.09754|
+|  Australia|   10| 7.284|    7.35665|   7.21135|1.48441|1.51004|0.843887|0.601607|  0.477699|0.301184|2.06521|
++-----------+-----+------+-----------+----------+-------+-------+--------+--------+----------+--------+-------+
+
+topHrankseven: Unit = ()
+
+scala> val avgscore = spark.sql(" select country, avg(Hscore) as AverageHappinessScore from caps_proj.HWR2017 group by country order by AverageHappinessScore desc").show()
++--------------+---------------------+                                          
+|       country|AverageHappinessScore|
++--------------+---------------------+
+|        Norway|   7.5370001792907715|
+|       Denmark|    7.521999835968018|
+|       Iceland|    7.504000186920166|
+|   Switzerland|     7.49399995803833|
+|       Finland|    7.468999862670898|
+|   Netherlands|    7.376999855041504|
+|        Canada|    7.315999984741211|
+|   New Zealand|    7.314000129699707|
+|     Australia|    7.283999919891357|
+|        Sweden|    7.283999919891357|
+|        Israel|   7.2129998207092285|
+|    Costa Rica|    7.078999996185303|
+|       Austria|     7.00600004196167|
+| United States|    6.993000030517578|
+|       Ireland|   6.9770002365112305|
+|       Germany|    6.951000213623047|
+|       Belgium|    6.890999794006348|
+|    Luxembourg|     6.86299991607666|
+|United Kingdom|    6.714000225067139|
+|         Chile|   6.6519999504089355|
++--------------+---------------------+
+only showing top 20 rows
+
+avgscore: Unit = ()
+
+scala> val rankdf = spark.sql(" select country, Hrank from caps_proj.HWR2017").show()
++--------------+-----+
+|       country|Hrank|
++--------------+-----+
+|        Norway|    1|
+|       Denmark|    2|
+|       Iceland|    3|
+|   Switzerland|    4|
+|       Finland|    5|
+|   Netherlands|    6|
+|        Canada|    7|
+|   New Zealand|    8|
+|        Sweden|    9|
+|     Australia|   10|
+|        Israel|   11|
+|    Costa Rica|   12|
+|       Austria|   13|
+| United States|   14|
+|       Ireland|   15|
+|       Germany|   16|
+|       Belgium|   17|
+|    Luxembourg|   18|
+|United Kingdom|   19|
+|         Chile|   20|
++--------------+-----+
+only showing top 20 rows
+
+rankdf: Unit = ()
+
+scala> val avgscore1 = spark.sql(" select country, avg(Hscore) as AverageHappinessScore from caps_proj.HWR2017 group by country order by AverageHappinessScore desc")
+avgscore1: org.apache.spark.sql.DataFrame = [country: string, AverageHappinessScore: double]
+
+scala> val rankdf1 = spark.sql(" select country, Hrank from caps_proj.HWR2017")
+rankdf1: org.apache.spark.sql.DataFrame = [country: string, Hrank: int]
+
+scala> val joinedDF = avgscore1.join(rankdf1, Seq("country"), "inner")
+joinedDF: org.apache.spark.sql.DataFrame = [country: string, AverageHappinessScore: double ... 1 more field]
+
+scala> joinedDF.show()
++--------------+---------------------+-----+                                    
+|       country|AverageHappinessScore|Hrank|
++--------------+---------------------+-----+
+|        Norway|   7.5370001792907715|    1|
+|       Denmark|    7.521999835968018|    2|
+|       Iceland|    7.504000186920166|    3|
+|   Switzerland|     7.49399995803833|    4|
+|       Finland|    7.468999862670898|    5|
+|   Netherlands|    7.376999855041504|    6|
+|        Canada|    7.315999984741211|    7|
+|   New Zealand|    7.314000129699707|    8|
+|        Sweden|    7.283999919891357|    9|
+|     Australia|    7.283999919891357|   10|
+|        Israel|   7.2129998207092285|   11|
+|    Costa Rica|    7.078999996185303|   12|
+|       Austria|     7.00600004196167|   13|
+| United States|    6.993000030517578|   14|
+|       Ireland|   6.9770002365112305|   15|
+|       Germany|    6.951000213623047|   16|
+|       Belgium|    6.890999794006348|   17|
+|    Luxembourg|     6.86299991607666|   18|
+|United Kingdom|    6.714000225067139|   19|
+|         Chile|   6.6519999504089355|   20|
++--------------+---------------------+-----+
+only showing top 20 rows
+
+scala> val avgeco = spark.sql(" select country, avg(economy) as AverageEconomyScore from caps_proj.HWR2017 group by country order by AverageEconomyScore desc").show()
++--------------------+-------------------+                                      
+|             country|AverageEconomyScore|
++--------------------+-------------------+
+|               Qatar|   1.87076997756958|
+|          Luxembourg| 1.7419400215148926|
+|           Singapore| 1.6922800540924072|
+|              Kuwait|  1.632949948310852|
+|United Arab Emirates| 1.6263400316238403|
+|              Norway| 1.6164599657058716|
+|         Switzerland| 1.5649800300598145|
+|       United States| 1.5462599992752075|
+|             Ireland| 1.5357099771499634|
+|        Saudi Arabia| 1.5306199789047241|
+|         Netherlands| 1.5039399862289429|
+|              Sweden| 1.4943900108337402|
+|             Bahrain| 1.4884099960327148|
+|             Germany| 1.4879200458526611|
+|             Austria| 1.4871000051498413|
+|           Australia|  1.484410047531128|
+|             Denmark| 1.4823800325393677|
+|             Iceland| 1.4806300401687622|
+|              Canada|  1.479200005531311|
+|             Belgium| 1.4637800455093384|
++--------------------+-------------------+
+only showing top 20 rows
+
+avgeco: Unit = ()
+
+scala> val avgfreedom = spark.sql(" select country, avg(freedom) as AverageFreedomScore from caps_proj.HWR2017 group by country order by AverageFreedomScore desc").show()
++--------------------+-------------------+                                      
+|             country|AverageFreedomScore|
++--------------------+-------------------+
+|          Uzbekistan|  0.658249020576477|
+|              Norway| 0.6354230046272278|
+|            Cambodia| 0.6333760023117065|
+|             Iceland| 0.6271629929542542|
+|             Denmark| 0.6260070204734802|
+|         Switzerland| 0.6200709939002991|
+|             Finland|  0.617950975894928|
+|         New Zealand| 0.6140620112419128|
+|              Sweden| 0.6129239797592163|
+|              Canada|  0.611100971698761|
+|United Arab Emirates| 0.6083449721336365|
+|               Qatar| 0.6041309833526611|
+|             Somalia| 0.6021270155906677|
+|           Australia| 0.6016070246696472|
+|          Luxembourg| 0.5966280102729797|
+|               Malta| 0.5887669920921326|
+|         Netherlands| 0.5853840112686157|
+|         Philippines| 0.5852149724960327|
+|              Rwanda| 0.5818439722061157|
+|            Thailand| 0.5802010297775269|
++--------------------+-------------------+
+only showing top 20 rows
+
+avgfreedom: Unit = ()
+
+scala> val avgfamily = spark.sql(" select country, avg(family) as AverageFamilyScore from caps_proj.HWR2017 group by country order by AverageFamilyScore desc").show()
++--------------+------------------+                                             
+|       country|AverageFamilyScore|
++--------------+------------------+
+|       Iceland| 1.610569953918457|
+|       Ireland|1.5582300424575806|
+|       Denmark|1.5511200428009033|
+|    Uzbekistan|1.5489699840545654|
+|   New Zealand| 1.548200011253357|
+|       Finland|1.5402499437332153|
+|        Norway| 1.533519983291626|
+|         Spain|1.5320899486541748|
+|   Switzerland|1.5169099569320679|
+|     Australia| 1.510040044784546|
+|      Paraguay|1.5072799921035767|
+|      Slovakia|1.5050599575042725|
+|United Kingdom|   1.4964599609375|
+|  Turkmenistan| 1.493149995803833|
+|      Mongolia|1.4930100440979004|
+|         Malta|1.4884099960327148|
+|        Canada|1.4813499450683594|
+|        Sweden|  1.47816002368927|
+|       Estonia|1.4766700267791748|
+|     Lithuania| 1.473520040512085|
++--------------+------------------+
+only showing top 20 rows
+
+avgfamily: Unit = ()
+
+scala> val avghealth = spark.sql(" select country, avg(health) as AverageHealthScore from caps_proj.HWR2017 group by country order by AverageHealthScore desc").show()
++------------+------------------+                                               
+|     country|AverageHealthScore|
++------------+------------------+
+|   Singapore|0.9494919776916504|
+|       Japan|0.9134759902954102|
+| South Korea|0.9002140164375305|
+|       Spain|0.8889610171318054|
+| Switzerland|0.8581309914588928|
+|       Italy|0.8531439900398254|
+|  Luxembourg|0.8450890183448792|
+|      Cyprus|0.8447149991989136|
+|      France| 0.844465970993042|
+|   Australia|0.8438869714736938|
+|      Israel|0.8384039998054504|
+|North Cyprus| 0.834646999835968|
+|      Canada|0.8345580101013184|
+|     Iceland|0.8335520029067993|
+|      Sweden|0.8308749794960022|
+|       Malta| 0.821943998336792|
+|       Chile|0.8194800019264221|
+|     Belgium|0.8180919885635376|
+| New Zealand|0.8167600035667419|
+|     Austria|0.8153280019760132|
++------------+------------------+
+only showing top 20 rows
+
+avghealth: Unit = ()
+
+scala>  val avgtrust = spark.sql(" select country, avg(trust) as AverageTrustScore from caps_proj.HWR2017 group by country order by AverageTrustScore desc").show()
++--------------------+-------------------+                                      
+|             country|  AverageTrustScore|
++--------------------+-------------------+
+|           Singapore| 0.4643079936504364|
+|              Rwanda| 0.4552200138568878|
+|               Qatar|0.43929898738861084|
+|             Denmark|0.40077000856399536|
+|              Sweden| 0.3843989968299866|
+|         New Zealand|0.38281700015068054|
+|             Finland| 0.3826119899749756|
+|         Switzerland|0.36700698733329773|
+|United Arab Emirates| 0.3244900107383728|
+|          Luxembourg|0.31883400678634644|
+|              Norway|  0.315964013338089|
+|           Australia| 0.3011839985847473|
+|             Ireland| 0.2983880043029785|
+|              Canada|0.28737199306488037|
+|         Netherlands| 0.2826620042324066|
+|             Somalia|0.28240999579429626|
+|             Germany| 0.2767319977283478|
+|        Saudi Arabia| 0.2734319865703583|
+|      United Kingdom|0.26542800664901733|
+|        Turkmenistan| 0.2592700123786926|
++--------------------+-------------------+
+only showing top 20 rows
+
+avgtrust: Unit = ()
+
+scala> val avggenerosity = spark.sql(" select country, avg(generosity) as AverageGenerosityScore from caps_proj.HWR2017 group by country order by AverageGenerosityScore desc").show()
++--------------+----------------------+                                         
+|       country|AverageGenerosityScore|
++--------------+----------------------+
+|       Myanmar|    0.8380749821662903|
+|     Indonesia|    0.6117050051689148|
+|         Malta|    0.5747309923171997|
+|      Thailand|    0.5721229910850525|
+|   New Zealand|    0.5000050067901611|
+|         Syria|    0.4936639964580536|
+|United Kingdom|   0.49277400970458984|
+|     Sri Lanka|   0.49086400866508484|
+|         Haiti|    0.4892039895057678|
+|     Australia|   0.47769901156425476|
+|       Iceland|   0.47554001212120056|
+|        Bhutan|    0.4740549921989441|
+|   Netherlands|    0.4704900085926056|
+|         Kenya|    0.4448600113391876|
+|        Canada|   0.43553999066352844|
+|    Kyrgyzstan|   0.42857998609542847|
+|       Ireland|   0.42785799503326416|
+|      Malaysia|     0.416608989238739|
+|    Uzbekistan|   0.41598400473594666|
+|         Nepal|    0.3940959870815277|
++--------------+----------------------+
+only showing top 20 rows
+
+avggenerosity: Unit = ()
+
+scala> sevendf.createOrReplaceTempView("HWR2017")
+
+scala> spark.sql("SELECT AVG(Hscore) AS AvgScore, MIN(Hscore) AS MinScore, MAX(Hscore) AS MaxScore FROM HWR2017").show()
++-----------------+--------+--------+                                           
+|         AvgScore|MinScore|MaxScore|
++-----------------+--------+--------+
+|5.353253246901871|   2.693|   7.537|
++-----------------+--------+--------+
+
+scala> spark.sql("SELECT corr(whiskerhigh,whiskerlow) AS Happiness_Correlation FROM HWR2017").show()
++---------------------+                                                         
+|Happiness_Correlation|
++---------------------+
+|   0.9980401078930193|
++---------------------+
+
+scala> sevendf.describe().show()
++-------+-----------+-----------------+------------------+------------------+-----------------+-------------------+------------------+-------------------+------------------+-------------------+-------------------+-------------------+
+|summary|    country|            hrank|            hscore|       whiskerhigh|       whiskerlow|            economy|            family|             health|           freedom|         generosity|              trust|                 dr|
++-------+-----------+-----------------+------------------+------------------+-----------------+-------------------+------------------+-------------------+------------------+-------------------+-------------------+-------------------+
+|  count|        154|              154|               154|               154|              154|                154|               154|                154|               154|                154|                154|                154|
+|   mean|       null|             77.5| 5.353253246901871| 5.451693697409197|5.254812519271653| 0.9810367203257108|1.1884177946425103| 0.5487971411014049|0.4082523776496482|0.24605495537111124|0.12201105250807648| 1.8586507474447225|
+| stddev|       null|44.60007473835292|1.1348805576706176|1.1221635332436481|1.148710329844928|0.41965364848154096|0.2881376859114002|0.23571462062859846|0.1503389961285159|0.13482359562026985|0.10104697089744542|0.49053066091203484|
+|    min|Afghanistan|                1|             2.693|           2.86488|          2.52112|                0.0|               0.0|                0.0|               0.0|                0.0|                0.0|           0.377914|
+|    max|   Zimbabwe|              154|             7.537|           7.62203|          7.47956|            1.87077|           1.61057|           0.949492|          0.658249|           0.838075|           0.464308|            3.11748|
++-------+-----------+-----------------+------------------+------------------+-----------------+-------------------+------------------+-------------------+------------------+-------------------+-------------------+-------------------+
+
+scala> val countseven = sevendf.count()
+countseven: Long = 154
+
+scala> val lastHrankseven = sevendf.filter($"Hrank">=144).show()
++--------------------+-----+------+-----------+----------+---------+--------+---------+---------+----------+---------+--------+
+|             country|hrank|hscore|whiskerhigh|whiskerlow|  economy|  family|   health|  freedom|generosity|    trust|      dr|
++--------------------+-----+------+-----------+----------+---------+--------+---------+---------+----------+---------+--------+
+|               Haiti|  144| 3.603|    3.73471|   3.47129|  0.36861| 0.64045| 0.277321|0.0303699|  0.489204|0.0998721| 1.69717|
+|               Yemen|  145| 3.593|    3.69275|   3.49325| 0.591683|0.935382| 0.310081| 0.249464|  0.104125|0.0567674|  1.3456|
+|         South Sudan|  146| 3.591|    3.72554|   3.45646| 0.397249|0.601323| 0.163486| 0.147062|  0.285671| 0.116794| 1.87957|
+|             Liberia|  147| 3.533|    3.65376|   3.41224| 0.119042|0.872118| 0.229918| 0.332881|   0.26655|0.0389482| 1.67329|
+|              Guinea|  148| 3.507|    3.58443|   3.42957|  0.24455|0.791245| 0.194129| 0.348588|  0.264815| 0.110938| 1.55231|
+|                Togo|  149| 3.495|    3.59404|   3.39596| 0.305445|0.431883| 0.247106| 0.380426|  0.196896| 0.095665| 1.83723|
+|              Rwanda|  150| 3.471|    3.54303|   3.39897| 0.368746|0.945707| 0.326425| 0.581844|  0.252756|  0.45522|0.540061|
+|               Syria|  151| 3.462|    3.66367|   3.26033| 0.777153|0.396103| 0.500533|0.0815394|  0.493664| 0.151347| 1.06157|
+|            Tanzania|  152| 3.349|    3.46143|   3.23657| 0.511136| 1.04199| 0.364509| 0.390018|  0.354256|0.0660351| 0.62113|
+|             Burundi|  153| 2.905|    3.07469|   2.73531|0.0916226|0.629794| 0.151611|0.0599008|  0.204435|0.0841479| 1.68302|
+|Central African R...|  154| 2.693|    2.86488|   2.52112|      0.0|     0.0|0.0187727| 0.270842|  0.280876|0.0565651|   2.066|
++--------------------+-----+------+-----------+----------+---------+--------+---------+---------+----------+---------+--------+
+
+lastHrankseven: Unit = ()
+
+
