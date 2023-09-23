@@ -1,0 +1,42 @@
+capstone project steps in ubuntu
+
+HADOOP
+	
+	bin/hadoop dfs -ls /
+	bin/hadoop dfs -ls /capstone1
+	bin/hadoop dfs -cat /capstone1/part-m-00000
+	
+MYSQL	
+
+	use caps_proj;
+	create table HWR2016 (country varchar(50),region varchar(75),Hrank int,Hscore float,lowConfidence float,upperConfidence float,economy float,family float,health float,freedom float,trust float,generosity float,dr float);
+	
+	
+normal terminal 
+	sudo cp /home/deivanai/Downloads/fwd/2016.csv /var/lib/mysql-files/
+	sudo ls /var/lib/mysql-files/
+
+Again MYSQL
+	load data infile '/var/lib/mysql-files/2016.csv' into table HWR2016 fields terminated by ',' lines terminated by '\n' ignore 1 lines;
+	
+HIVE
+
+	use caps_proj;
+	create table HWR2016 (country string,region string,Hrank int,Hscore float,lowConfidence float,upperConfidence float,economy float,family float,health float,freedom float,trust float,generosity float,dr float) row format delimited ;
+
+TO LOAD DATA FROM HDFS
+	load data inpath '/capstone1/part-m-00000' into table HWR2016;
+	
+	
+SQOOP
+
+	MYSQL to HDFS
+	bin/sqoop import --connect jdbc:mysql://localhost/caps_proj --username training --password training --table HWR2016 --target-dir /capstone1 -m1;
+	MYSQL to HIVE
+	bin/sqoop import --connect jdbc:mysql://localhost/caps_proj --username hiveuser --password password --table HWR2016 --hive-import --hive-table caps_proj.HWR2016 -m1;
+
+
+SPARK  connecting hive and spark
+	
+	val sixdf = spark.sql("select * from caps_proj.HWR2016")
+	sixdf.show()
