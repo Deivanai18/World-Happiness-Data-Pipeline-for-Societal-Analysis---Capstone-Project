@@ -1,0 +1,42 @@
+capstone project steps in ubuntu
+
+HADOOP
+	
+	bin/hadoop dfs -ls /
+	bin/hadoop dfs -ls /capstone3
+	bin/hadoop dfs -cat /capstone3/part-m-00000
+	
+MYSQL	
+
+	use caps_proj;
+	create table HWR2016 (country varchar(50),overAllRank int,Score float,gdpcaptia float,SocialSupport float,health float,freedom float,generosity float,perceptionsOfCorruption float);
+	
+	
+normal terminal 
+	sudo cp /home/deivanai/Downloads/fwd/2018.csv /var/lib/mysql-files/
+	sudo ls /var/lib/mysql-files/
+
+Again MYSQL
+	load data infile '/var/lib/mysql-files/2018.csv' into table HWR2018 fields terminated by ',' lines terminated by '\n' ignore 1 lines;
+	
+HIVE
+
+	use caps_proj;
+	create table HWR2018 (country string,overAllRank int,Score float,gdpcaptia float,SocialSupport float,health float,freedom float,generosity float,perceptionsOfCorruption float) row format delimited ;
+
+TO LOAD DATA FROM HDFS
+	load data inpath '/capstone3/part-m-00000' into table HWR2018;
+	
+	
+SQOOP
+
+	MYSQL to HDFS
+	bin/sqoop import --connect jdbc:mysql://localhost/caps_proj --username training --password training --table HWR2018 --target-dir /capstone3 -m1;
+	MYSQL to HIVE
+	bin/sqoop import --connect jdbc:mysql://localhost/caps_proj --username hiveuser --password password --table HWR2018 --hive-import --hive-table caps_proj.HWR2018 -m1;
+
+
+SPARK  connecting hive and spark
+	
+	val eightdf = spark.sql("select * from caps_proj.HWR2018")
+	eightdf.show()
