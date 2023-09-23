@@ -1,0 +1,420 @@
+scala> val ninedf = spark.sql("select * from caps_proj.HWR2019")
+Loading class `com.mysql.jdbc.Driver'. This is deprecated. The new driver class is `com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
+23/09/23 12:49:39 WARN ObjectStore: Failed to get database global_temp, returning NoSuchObjectException
+ninedf: org.apache.spark.sql.DataFrame = [overallrank: int, country: string ... 7 more fields]
+
+scala> ninedf.show
++-----------+--------------+-----+---------+-------------+------+-------+----------+----------------------+
+|overallrank|       country|score|gdpcaptia|socialsupport|health|freedom|generosity|perceptionofcorruption|
++-----------+--------------+-----+---------+-------------+------+-------+----------+----------------------+
+|          1|       Finland|7.769|     1.34|        1.587| 0.986|  0.596|     0.153|                 0.393|
+|          2|       Denmark|  7.6|    1.383|        1.573| 0.996|  0.592|     0.252|                  0.41|
+|          3|        Norway|7.554|    1.488|        1.582| 1.028|  0.603|     0.271|                 0.341|
+|          4|       Iceland|7.494|     1.38|        1.624| 1.026|  0.591|     0.354|                 0.118|
+|          5|   Netherlands|7.488|    1.396|        1.522| 0.999|  0.557|     0.322|                 0.298|
+|          6|   Switzerland| 7.48|    1.452|        1.526| 1.052|  0.572|     0.263|                 0.343|
+|          7|        Sweden|7.343|    1.387|        1.487| 1.009|  0.574|     0.267|                 0.373|
+|          8|   New Zealand|7.307|    1.303|        1.557| 1.026|  0.585|      0.33|                  0.38|
+|          9|        Canada|7.278|    1.365|        1.505| 1.039|  0.584|     0.285|                 0.308|
+|         10|       Austria|7.246|    1.376|        1.475| 1.016|  0.532|     0.244|                 0.226|
+|         11|     Australia|7.228|    1.372|        1.548| 1.036|  0.557|     0.332|                  0.29|
+|         12|    Costa Rica|7.167|    1.034|        1.441| 0.963|  0.558|     0.144|                 0.093|
+|         13|        Israel|7.139|    1.276|        1.455| 1.029|  0.371|     0.261|                 0.082|
+|         14|    Luxembourg| 7.09|    1.609|        1.479| 1.012|  0.526|     0.194|                 0.316|
+|         15|United Kingdom|7.054|    1.333|        1.538| 0.996|   0.45|     0.348|                 0.278|
+|         16|       Ireland|7.021|    1.499|        1.553| 0.999|  0.516|     0.298|                  0.31|
+|         17|       Germany|6.985|    1.373|        1.454| 0.987|  0.495|     0.261|                 0.265|
+|         18|       Belgium|6.923|    1.356|        1.504| 0.986|  0.473|      0.16|                  0.21|
+|         19| United States|6.892|    1.433|        1.457| 0.874|  0.454|      0.28|                 0.128|
+|         20|Czech Republic|6.852|    1.269|        1.487|  0.92|  0.457|     0.046|                 0.036|
++-----------+--------------+-----+---------+-------------+------+-------+----------+----------------------+
+only showing top 20 rows
+
+scala> ninedf.printSchema()
+root
+ |-- overallrank: integer (nullable = true)
+ |-- country: string (nullable = true)
+ |-- score: float (nullable = true)
+ |-- gdpcaptia: float (nullable = true)
+ |-- socialsupport: float (nullable = true)
+ |-- health: float (nullable = true)
+ |-- freedom: float (nullable = true)
+ |-- generosity: float (nullable = true)
+ |-- perceptionofcorruption: float (nullable = true)
+
+
+scala> val countcols = ninedf.columns.length
+countcols: Int = 9
+
+scala> val topHranknine = ninedf.filter($"overAllRank"<=10).show()
++-----------+-----------+-----+---------+-------------+------+-------+----------+----------------------+
+|overallrank|    country|score|gdpcaptia|socialsupport|health|freedom|generosity|perceptionofcorruption|
++-----------+-----------+-----+---------+-------------+------+-------+----------+----------------------+
+|          1|    Finland|7.769|     1.34|        1.587| 0.986|  0.596|     0.153|                 0.393|
+|          2|    Denmark|  7.6|    1.383|        1.573| 0.996|  0.592|     0.252|                  0.41|
+|          3|     Norway|7.554|    1.488|        1.582| 1.028|  0.603|     0.271|                 0.341|
+|          4|    Iceland|7.494|     1.38|        1.624| 1.026|  0.591|     0.354|                 0.118|
+|          5|Netherlands|7.488|    1.396|        1.522| 0.999|  0.557|     0.322|                 0.298|
+|          6|Switzerland| 7.48|    1.452|        1.526| 1.052|  0.572|     0.263|                 0.343|
+|          7|     Sweden|7.343|    1.387|        1.487| 1.009|  0.574|     0.267|                 0.373|
+|          8|New Zealand|7.307|    1.303|        1.557| 1.026|  0.585|      0.33|                  0.38|
+|          9|     Canada|7.278|    1.365|        1.505| 1.039|  0.584|     0.285|                 0.308|
+|         10|    Austria|7.246|    1.376|        1.475| 1.016|  0.532|     0.244|                 0.226|
++-----------+-----------+-----+---------+-------------+------+-------+----------+----------------------+
+
+topHranknine: Unit = ()
+
+scala> val countnine = ninedf.count()
+countnine: Long = 156
+
+scala> val lastHranknine = ninedf.filter($"overAllRank">=146).show()
++-----------+--------------------+-----+---------+-------------+------+-------+----------+----------------------+
+|overallrank|             country|score|gdpcaptia|socialsupport|health|freedom|generosity|perceptionofcorruption|
++-----------+--------------------+-----+---------+-------------+------+-------+----------+----------------------+
+|        146|            Zimbabwe|3.663|    0.366|        1.114| 0.433|  0.361|     0.151|                 0.089|
+|        147|               Haiti|3.597|    0.323|        0.688| 0.449|  0.026|     0.419|                  0.11|
+|        148|            Botswana|3.488|    1.041|        1.145| 0.538|  0.455|     0.025|                   0.1|
+|        149|               Syria|3.462|    0.619|        0.378|  0.44|  0.013|     0.331|                 0.141|
+|        150|              Malawi| 3.41|    0.191|         0.56| 0.495|  0.443|     0.218|                 0.089|
+|        151|               Yemen| 3.38|    0.287|        1.163| 0.463|  0.143|     0.108|                 0.077|
+|        152|              Rwanda|3.334|    0.359|        0.711| 0.614|  0.555|     0.217|                 0.411|
+|        153|            Tanzania|3.231|    0.476|        0.885| 0.499|  0.417|     0.276|                 0.147|
+|        154|         Afghanistan|3.203|     0.35|        0.517| 0.361|    0.0|     0.158|                 0.025|
+|        155|Central African R...|3.083|    0.026|          0.0| 0.105|  0.225|     0.235|                 0.035|
+|        156|         South Sudan|2.853|    0.306|        0.575| 0.295|   0.01|     0.202|                 0.091|
++-----------+--------------------+-----+---------+-------------+------+-------+----------+----------------------+
+
+lastHranknine: Unit = ()
+
+scala> ninedf.describe().show()
++-------+-----------------+-----------+------------------+------------------+-------------------+------------------+-------------------+-------------------+----------------------+
+|summary|      overallrank|    country|             score|         gdpcaptia|      socialsupport|            health|            freedom|         generosity|perceptionofcorruption|
++-------+-----------------+-----------+------------------+------------------+-------------------+------------------+-------------------+-------------------+----------------------+
+|  count|              156|        156|               156|               156|                156|               156|                156|                156|                   156|
+|   mean|             78.5|       null| 5.407096141423935|0.9051474355973113| 1.2088140996220784|0.7252435908199121|0.39257051259613573|0.18484615366189525|   0.11060256445601296|
+| stddev|45.17742799230607|       null|1.1131198708001244|0.3983894643695247|0.29919139915706555|0.2421240019160849|0.14328947172275724| 0.0952544403296378|   0.09453783540421863|
+|    min|                1|Afghanistan|             2.853|               0.0|                0.0|               0.0|                0.0|                0.0|                   0.0|
+|    max|              156|   Zimbabwe|             7.769|             1.684|              1.624|             1.141|              0.631|              0.566|                 0.453|
++-------+-----------------+-----------+------------------+------------------+-------------------+------------------+-------------------+-------------------+----------------------+
+
+scala> val avgscore = spark.sql(" select country, avg(score) as AverageHappinessScore from caps_proj.HWR2019 group by country order by AverageHappinessScore desc")
+avgscore: org.apache.spark.sql.DataFrame = [country: string, AverageHappinessScore: double]
+
+scala> avgscore.show()
++--------------+---------------------+                                          
+|       country|AverageHappinessScore|
++--------------+---------------------+
+|       Finland|    7.769000053405762|
+|       Denmark|    7.599999904632568|
+|        Norway|    7.553999900817871|
+|       Iceland|     7.49399995803833|
+|   Netherlands|     7.48799991607666|
+|   Switzerland|    7.480000019073486|
+|        Sweden|   7.3429999351501465|
+|   New Zealand|    7.307000160217285|
+|        Canada|   7.2779998779296875|
+|       Austria|    7.245999813079834|
+|     Australia|    7.228000164031982|
+|    Costa Rica|    7.166999816894531|
+|        Israel|    7.138999938964844|
+|    Luxembourg|    7.090000152587891|
+|United Kingdom|    7.053999900817871|
+|       Ireland|    7.020999908447266|
+|       Germany|    6.985000133514404|
+|       Belgium|    6.922999858856201|
+| United States|    6.892000198364258|
+|Czech Republic|   6.8520002365112305|
++--------------+---------------------+
+only showing top 20 rows
+
+scala> val rankdf = spark.sql(" select country, overAllRank from caps_proj.HWR2019")
+rankdf: org.apache.spark.sql.DataFrame = [country: string, overAllRank: int]
+
+scala> rankdf.show()
++--------------+-----------+
+|       country|overAllRank|
++--------------+-----------+
+|       Finland|          1|
+|       Denmark|          2|
+|        Norway|          3|
+|       Iceland|          4|
+|   Netherlands|          5|
+|   Switzerland|          6|
+|        Sweden|          7|
+|   New Zealand|          8|
+|        Canada|          9|
+|       Austria|         10|
+|     Australia|         11|
+|    Costa Rica|         12|
+|        Israel|         13|
+|    Luxembourg|         14|
+|United Kingdom|         15|
+|       Ireland|         16|
+|       Germany|         17|
+|       Belgium|         18|
+| United States|         19|
+|Czech Republic|         20|
++--------------+-----------+
+only showing top 20 rows
+
+scala> val joinedDF = avgscore.join(rankdf, Seq("country"), "inner")
+joinedDF: org.apache.spark.sql.DataFrame = [country: string, AverageHappinessScore: double ... 1 more field]
+
+scala> joinedDF.show()
++--------------+---------------------+-----------+                              
+|       country|AverageHappinessScore|overAllRank|
++--------------+---------------------+-----------+
+|       Finland|    7.769000053405762|          1|
+|       Denmark|    7.599999904632568|          2|
+|        Norway|    7.553999900817871|          3|
+|       Iceland|     7.49399995803833|          4|
+|   Netherlands|     7.48799991607666|          5|
+|   Switzerland|    7.480000019073486|          6|
+|        Sweden|   7.3429999351501465|          7|
+|   New Zealand|    7.307000160217285|          8|
+|        Canada|   7.2779998779296875|          9|
+|       Austria|    7.245999813079834|         10|
+|     Australia|    7.228000164031982|         11|
+|    Costa Rica|    7.166999816894531|         12|
+|        Israel|    7.138999938964844|         13|
+|    Luxembourg|    7.090000152587891|         14|
+|United Kingdom|    7.053999900817871|         15|
+|       Ireland|    7.020999908447266|         16|
+|       Germany|    6.985000133514404|         17|
+|       Belgium|    6.922999858856201|         18|
+| United States|    6.892000198364258|         19|
+|Czech Republic|   6.8520002365112305|         20|
++--------------+---------------------+-----------+
+only showing top 20 rows
+
+scala> val avgeco = spark.sql(" select country, avg(gdpcaptia) as AverageEconomyScore from caps_proj.HWR2019 group by country order by AverageEconomyScore desc").show()
++--------------------+-------------------+                                      
+|             country|AverageEconomyScore|
++--------------------+-------------------+
+|               Qatar|  1.684000015258789|
+|          Luxembourg| 1.6089999675750732|
+|           Singapore| 1.5720000267028809|
+|United Arab Emirates|  1.503000020980835|
+|              Kuwait|                1.5|
+|             Ireland| 1.4989999532699585|
+|              Norway| 1.4880000352859497|
+|         Switzerland| 1.4520000219345093|
+|           Hong Kong|  1.437999963760376|
+|       United States| 1.4329999685287476|
+|        Saudi Arabia|  1.402999997138977|
+|         Netherlands| 1.3960000276565552|
+|              Sweden| 1.3869999647140503|
+|             Denmark| 1.3830000162124634|
+|             Iceland| 1.3799999952316284|
+|             Austria| 1.3760000467300415|
+|             Germany| 1.3730000257492065|
+|           Australia|  1.371999979019165|
+|              Taiwan| 1.3680000305175781|
+|              Canada| 1.3650000095367432|
++--------------------+-------------------+
+only showing top 20 rows
+
+avgeco: Unit = ()
+
+scala> val avgfreedom = spark.sql(" select country, avg(freedom) as AverageFreedomScore from caps_proj.HWR2019 group by country order by AverageFreedomScore desc").show()
++--------------------+-------------------+                                      
+|             country|AverageFreedomScore|
++--------------------+-------------------+
+|          Uzbekistan| 0.6309999823570251|
+|            Cambodia|  0.609000027179718|
+|              Norway| 0.6029999852180481|
+|United Arab Emirates| 0.5979999899864197|
+|             Finland| 0.5960000157356262|
+|             Denmark| 0.5920000076293945|
+|             Iceland| 0.5910000205039978|
+|         New Zealand| 0.5849999785423279|
+|              Canada| 0.5839999914169312|
+|              Sweden| 0.5740000009536743|
+|         Switzerland| 0.5720000267028809|
+|               Malta| 0.5640000104904175|
+|            Slovenia| 0.5640000104904175|
+|             Somalia| 0.5590000152587891|
+|         Philippines| 0.5580000281333923|
+|          Costa Rica| 0.5580000281333923|
+|            Thailand| 0.5569999814033508|
+|           Australia| 0.5569999814033508|
+|         Netherlands| 0.5569999814033508|
+|           Singapore| 0.5559999942779541|
++--------------------+-------------------+
+only showing top 20 rows
+
+avgfreedom: Unit = ()
+
+scala> val avgfamily = spark.sql(" select country, avg(socialsupport) as AverageFamilyScore from caps_proj.HWR2019 group by country order by AverageFamilyScore desc").show()
++--------------+------------------+                                             
+|       country|AverageFamilyScore|
++--------------+------------------+
+|       Iceland|1.6239999532699585|
+|       Finland|1.5870000123977661|
+|        Norway|1.5820000171661377|
+|       Denmark|1.5729999542236328|
+|   New Zealand|1.5570000410079956|
+|       Ireland|1.5529999732971191|
+|     Australia|1.5479999780654907|
+|  Turkmenistan|1.5379999876022339|
+|United Kingdom|1.5379999876022339|
+|      Mongolia| 1.531000018119812|
+|    Uzbekistan|1.5290000438690186|
+|       Estonia| 1.527999997138977|
+|   Switzerland|1.5260000228881836|
+|      Slovenia|1.5230000019073486|
+|   Netherlands|1.5219999551773071|
+|         Malta|1.5199999809265137|
+|     Lithuania|1.5149999856948853|
+|      Bulgaria|1.5130000114440918|
+|    Kazakhstan|1.5080000162124634|
+|        Canada|1.5049999952316284|
++--------------+------------------+
+only showing top 20 rows
+
+avgfamily: Unit = ()
+
+scala> val avghealth = spark.sql(" select country, avg(health) as AverageHealthScore from caps_proj.HWR2019 group by country order by AverageHealthScore desc").show()
++---------------+------------------+                                            
+|        country|AverageHealthScore|
++---------------+------------------+
+|      Singapore|1.1410000324249268|
+|      Hong Kong| 1.121999979019165|
+|          Japan|1.0880000591278076|
+|          Spain| 1.062000036239624|
+|    Switzerland|1.0520000457763672|
+|         France|1.0449999570846558|
+|Northern Cyprus|1.0420000553131104|
+|         Cyprus|1.0420000553131104|
+|         Canada|1.0390000343322754|
+|          Italy|1.0390000343322754|
+|    South Korea|1.0360000133514404|
+|      Australia|1.0360000133514404|
+|         Israel|1.0290000438690186|
+|         Norway| 1.027999997138977|
+|    New Zealand|1.0260000228881836|
+|        Iceland|1.0260000228881836|
+|        Austria|1.0160000324249268|
+|     Luxembourg|1.0119999647140503|
+|         Sweden|1.0089999437332153|
+|       Portugal|0.9990000128746033|
++---------------+------------------+
+only showing top 20 rows
+
+avghealth: Unit = ()
+
+scala> val avgtrust = spark.sql(" select country, avg(perceptionofcorruption) as AverageTrustScore from caps_proj.HWR2019 group by country order by AverageTrustScore desc").show()
++--------------+-------------------+                                            
+|       country|  AverageTrustScore|
++--------------+-------------------+
+|     Singapore|  0.453000009059906|
+|        Rwanda|0.41100001335144043|
+|       Denmark| 0.4099999964237213|
+|       Finland| 0.3930000066757202|
+|   New Zealand| 0.3799999952316284|
+|        Sweden|0.37299999594688416|
+|   Switzerland|0.34299999475479126|
+|        Norway| 0.3409999907016754|
+|    Luxembourg| 0.3160000145435333|
+|       Ireland| 0.3100000023841858|
+|        Canada|0.30799999833106995|
+|   Netherlands| 0.2980000078678131|
+|     Australia|0.28999999165534973|
+|     Hong Kong|0.28700000047683716|
+|United Kingdom|0.27799999713897705|
+|       Somalia|0.27000001072883606|
+|       Germany|0.26499998569488525|
+|    Uzbekistan|0.23999999463558197|
+|       Austria|0.22599999606609344|
+|       Belgium|0.20999999344348907|
++--------------+-------------------+
+only showing top 20 rows
+
+avgtrust: Unit = ()
+
+scala> val avggenerosity = spark.sql(" select country, avg(generosity) as AverageGenerosityScore from caps_proj.HWR2019 group by country order by AverageGenerosityScore desc").show()
++--------------+----------------------+                                         
+|       country|AverageGenerosityScore|
++--------------+----------------------+
+|       Myanmar|    0.5659999847412109|
+|     Indonesia|   0.49799999594688416|
+|         Haiti|    0.4189999997615814|
+|         Malta|                 0.375|
+|         Kenya|    0.3720000088214874|
+|        Bhutan|    0.3700000047683716|
+|      Thailand|   0.35899999737739563|
+|       Iceland|    0.3540000021457672|
+|United Kingdom|    0.3479999899864197|
+|     Australia|    0.3319999873638153|
+|         Syria|    0.3310000002384186|
+|   New Zealand|   0.33000001311302185|
+|   Netherlands|   0.32199999690055847|
+|    Uzbekistan|   0.32199999690055847|
+|    Kyrgyzstan|   0.30000001192092896|
+|       Ireland|    0.2980000078678131|
+|        Canada|    0.2849999964237213|
+|         Nepal|    0.2849999964237213|
+| United States|    0.2800000011920929|
+|      Tanzania|    0.2759999930858612|
++--------------+----------------------+
+only showing top 20 rows
+
+avggenerosity: Unit = ()
+
+scala> ninedf.createOrReplaceTempView("HWR2019")
+
+scala> spark.sql("SELECT AVG(score) AS AvgScore, MIN(score) AS MinScore, MAX(score) AS MaxScore FROM HWR2019").show()
++-----------------+--------+--------+
+|         AvgScore|MinScore|MaxScore|
++-----------------+--------+--------+
+|5.407096141423935|   2.853|   7.769|
++-----------------+--------+--------+
+
+
+scala> spark.sql("SELECT corr(score,gdpcaptia) AS Happiness_Correlation FROM HWR2019").show()
++---------------------+
+|Happiness_Correlation|
++---------------------+
+|   0.7938828751473616|
++---------------------+
+
+
+scala> spark.sql("SELECT corr(score,socialsupport) AS Happiness_Correlation FROM HWR2019").show()
++---------------------+
+|Happiness_Correlation|
++---------------------+
+|   0.7770577978828243|
++---------------------+
+
+
+scala> spark.sql("SELECT corr(score,health) AS Happiness_Correlation FROM HWR2019").show()
++---------------------+
+|Happiness_Correlation|
++---------------------+
+|   0.7798831602807871|
++---------------------+
+
+
+scala> spark.sql("SELECT corr(score,freedom) AS Happiness_Correlation FROM HWR2019").show()
++---------------------+
+|Happiness_Correlation|
++---------------------+
+|   0.5667418270170034|
++---------------------+
+
+scala> spark.sql("SELECT corr(score,generosity) AS Happiness_Correlation FROM HWR2019").show()
++---------------------+
+|Happiness_Correlation|
++---------------------+
+|  0.07582368134736697|
++---------------------+
+
+
+scala> spark.sql("SELECT corr(score,perceptionofcorruption) AS Happiness_Correlation FROM HWR2019").show()
++---------------------+
+|Happiness_Correlation|
++---------------------+
+|   0.3856130645855984|
++---------------------+
+
+
