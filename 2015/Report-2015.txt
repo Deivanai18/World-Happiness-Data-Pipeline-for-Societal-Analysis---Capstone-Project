@@ -1,0 +1,533 @@
+scala> val fivedf = spark.sql("select * from caps_proj.HWR2015")
+Loading class `com.mysql.jdbc.Driver'. This is deprecated. The new driver class is `com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
+23/09/23 00:28:47 WARN ObjectStore: Failed to get database global_temp, returning NoSuchObjectException
+fivedf: org.apache.spark.sql.DataFrame = [country: string, region: string ... 10 more fields]
+
+scala> fivedf.show
++--------------------+--------------------+-----+------+-------------+-------+-------+-------+-------+-------+----------+-------+
+|             country|              region|hrank|hscore|standarderror|economy| family| health|freedom|  trust|generosity|     dr|
++--------------------+--------------------+-----+------+-------------+-------+-------+-------+-------+-------+----------+-------+
+|         Switzerland|      Western Europe|    1| 7.587|      0.03411|1.39651|1.34951|0.94143|0.66557|0.41978|   0.29678|2.51738|
+|             Iceland|      Western Europe|    2| 7.561|      0.04884|1.30232|1.40223|0.94784|0.62877|0.14145|    0.4363|2.70201|
+|             Denmark|      Western Europe|    3| 7.527|      0.03328|1.32548|1.36058|0.87464|0.64938|0.48357|   0.34139|2.49204|
+|              Norway|      Western Europe|    4| 7.522|       0.0388|  1.459|1.33095|0.88521|0.66973|0.36503|   0.34699|2.46531|
+|              Canada|       North America|    5| 7.427|      0.03553|1.32629|1.32261|0.90563|0.63297|0.32957|   0.45811|2.45176|
+|             Finland|      Western Europe|    6| 7.406|       0.0314|1.29025|1.31826|0.88911|0.64169|0.41372|   0.23351|2.61955|
+|         Netherlands|      Western Europe|    7| 7.378|      0.02799|1.32944|1.28017|0.89284|0.61576|0.31814|    0.4761| 2.4657|
+|              Sweden|      Western Europe|    8| 7.364|      0.03157|1.33171|1.28907|0.91087| 0.6598|0.43844|   0.36262|2.37119|
+|         New Zealand|Australia and New...|    9| 7.286|      0.03371|1.25018|1.31967|0.90837|0.63938|0.42922|   0.47501|2.26425|
+|           Australia|Australia and New...|   10| 7.284|      0.04083|1.33358|1.30923|0.93156|0.65124|0.35637|   0.43562|2.26646|
+|              Israel|Middle East and N...|   11| 7.278|       0.0347|1.22857|1.22393|0.91387|0.41319|0.07785|   0.33172|3.08854|
+|          Costa Rica|Latin America and...|   12| 7.226|      0.04454|0.95578|1.23788|0.86027|0.63376|0.10583|   0.25497|3.17728|
+|             Austria|      Western Europe|   13|   7.2|      0.03751|1.33723|1.29704|0.89042|0.62433|0.18676|   0.33088| 2.5332|
+|              Mexico|Latin America and...|   14| 7.187|      0.04176|1.02054|0.91451|0.81444|0.48181|0.21312|   0.14074|3.60214|
+|       United States|       North America|   15| 7.119|      0.03839|1.39451|1.24711|0.86179|0.54604| 0.1589|   0.40105|2.51011|
+|              Brazil|Latin America and...|   16| 6.983|      0.04076|0.98124|1.23287|0.69702|0.49049|0.17521|   0.14574|3.26001|
+|          Luxembourg|      Western Europe|   17| 6.946|      0.03499|1.56391|1.21963|0.91894|0.61583|0.37798|   0.28034|1.96961|
+|             Ireland|      Western Europe|   18|  6.94|      0.03676|1.33596|1.36948|0.89533|0.61777|0.28703|   0.45901| 1.9757|
+|             Belgium|      Western Europe|   19| 6.937|      0.03595|1.30782|1.28566|0.89667| 0.5845| 0.2254|    0.2225|2.41484|
+|United Arab Emirates|Middle East and N...|   20| 6.901|      0.03729|1.42727|1.12575|0.80925|0.64157|0.38583|   0.26428|2.24743|
++--------------------+--------------------+-----+------+-------------+-------+-------+-------+-------+-------+----------+-------+
+only showing top 20 rows
+
+
+scala> val countcols = fivedf.columns.length
+countcols: Int = 12
+
+scala> fivedf.describe().show()
++-------+-----------+--------------------+-----------------+------------------+--------------------+------------------+-------------------+-------------------+-------------------+-------------------+-------------------+------------------+
+|summary|    country|              region|            hrank|            hscore|       standarderror|           economy|             family|             health|            freedom|              trust|         generosity|                dr|
++-------+-----------+--------------------+-----------------+------------------+--------------------+------------------+-------------------+-------------------+-------------------+-------------------+-------------------+------------------+
+|  count|        158|                 158|              158|               158|                 158|               158|                158|                158|                158|                158|                158|               158|
+|   mean|       null|                null|79.49367088607595| 5.375734169271928| 0.04788474671401178|0.8461372161260511| 0.9910459499570388| 0.6302593700069038|0.42861493658038635|0.14342183443198947|0.23729550671215535| 2.098976772985881|
+| stddev|       null|                null|45.75436310480852|1.1450101197677027|0.017146178567604694|0.4031207786332347|0.27236908745676053|0.24707776815695176|0.15069278443456735|0.12003407242254958|0.12668493472989606|0.5535497878375516|
+|    min|Afghanistan|Australia and New...|                1|             2.839|             0.01848|               0.0|                0.0|                0.0|                0.0|                0.0|                0.0|           0.32858|
+|    max|   Zimbabwe|      Western Europe|              158|             7.587|             0.13693|           1.69042|            1.40223|            1.02525|            0.66973|            0.55191|            0.79588|           3.60214|
++-------+-----------+--------------------+-----------------+------------------+--------------------+------------------+-------------------+-------------------+-------------------+-------------------+-------------------+------------------+
+
+scala> val topHrankfive = fivedf.filter($"Hrank"<=10).show()
++-----------+--------------------+-----+------+-------------+-------+-------+-------+-------+-------+----------+-------+
+|    country|              region|hrank|hscore|standarderror|economy| family| health|freedom|  trust|generosity|     dr|
++-----------+--------------------+-----+------+-------------+-------+-------+-------+-------+-------+----------+-------+
+|Switzerland|      Western Europe|    1| 7.587|      0.03411|1.39651|1.34951|0.94143|0.66557|0.41978|   0.29678|2.51738|
+|    Iceland|      Western Europe|    2| 7.561|      0.04884|1.30232|1.40223|0.94784|0.62877|0.14145|    0.4363|2.70201|
+|    Denmark|      Western Europe|    3| 7.527|      0.03328|1.32548|1.36058|0.87464|0.64938|0.48357|   0.34139|2.49204|
+|     Norway|      Western Europe|    4| 7.522|       0.0388|  1.459|1.33095|0.88521|0.66973|0.36503|   0.34699|2.46531|
+|     Canada|       North America|    5| 7.427|      0.03553|1.32629|1.32261|0.90563|0.63297|0.32957|   0.45811|2.45176|
+|    Finland|      Western Europe|    6| 7.406|       0.0314|1.29025|1.31826|0.88911|0.64169|0.41372|   0.23351|2.61955|
+|Netherlands|      Western Europe|    7| 7.378|      0.02799|1.32944|1.28017|0.89284|0.61576|0.31814|    0.4761| 2.4657|
+|     Sweden|      Western Europe|    8| 7.364|      0.03157|1.33171|1.28907|0.91087| 0.6598|0.43844|   0.36262|2.37119|
+|New Zealand|Australia and New...|    9| 7.286|      0.03371|1.25018|1.31967|0.90837|0.63938|0.42922|   0.47501|2.26425|
+|  Australia|Australia and New...|   10| 7.284|      0.04083|1.33358|1.30923|0.93156|0.65124|0.35637|   0.43562|2.26646|
++-----------+--------------------+-----+------+-------------+-------+-------+-------+-------+-------+----------+-------+
+
+topHranksix: Unit = ()
+
+scala> val countfive = fivedf.count()
+countfive: Long = 158
+
+scala> val lastHrankfive = fivedf.filter($"Hrank">=148).show()
++--------------------+--------------------+-----+------+-------------+-------+-------+-------+-------+-------+----------+-------+
+|             country|              region|hrank|hscore|standarderror|economy| family| health|freedom|  trust|generosity|     dr|
++--------------------+--------------------+-----+------+-------------+-------+-------+-------+-------+-------+----------+-------+
+|Central African R...|  Sub-Saharan Africa|  148| 3.678|      0.06112| 0.0785|    0.0|0.06699|0.48879|0.08289|   0.23835| 2.7223|
+|                Chad|  Sub-Saharan Africa|  149| 3.667|       0.0383|0.34193|0.76062| 0.1501|0.23501|0.05269|   0.18386|1.94296|
+|              Guinea|  Sub-Saharan Africa|  150| 3.656|       0.0359|0.17417|0.46475|0.24009|0.37725|0.12139|   0.28657|1.99172|
+|         Ivory Coast|  Sub-Saharan Africa|  151| 3.655|      0.05141|0.46534|0.77115|0.15185|0.46866|0.17922|   0.20165|1.41723|
+|        Burkina Faso|  Sub-Saharan Africa|  152| 3.587|      0.04324|0.25812|0.85188|0.27125|0.39493|0.12832|   0.21747|1.46494|
+|         Afghanistan|       Southern Asia|  153| 3.575|      0.03084|0.31982|0.30285|0.30335|0.23414|0.09719|    0.3651| 1.9521|
+|              Rwanda|  Sub-Saharan Africa|  154| 3.465|      0.03464|0.22208| 0.7737|0.42864|0.59201|0.55191|   0.22628|0.67042|
+|               Benin|  Sub-Saharan Africa|  155|  3.34|      0.03656|0.28665|0.35386| 0.3191| 0.4845| 0.0801|    0.1826|1.63328|
+|               Syria|Middle East and N...|  156| 3.006|      0.05015| 0.6632|0.47489|0.72193|0.15684|0.18906|   0.47179|0.32858|
+|             Burundi|  Sub-Saharan Africa|  157| 2.905|      0.08658| 0.0153|0.41587|0.22396| 0.1185|0.10062|   0.19727|1.83302|
+|                Togo|  Sub-Saharan Africa|  158| 2.839|      0.06727|0.20868|0.13995|0.28443|0.36453|0.10731|   0.16681|1.56726|
++--------------------+--------------------+-----+------+-------------+-------+-------+-------+-------+-------+----------+-------+
+
+lastHrankfive: Unit = ()
+
+scala> fivedf.printSchema()
+root
+ |-- country: string (nullable = true)
+ |-- region: string (nullable = true)
+ |-- hrank: integer (nullable = true)
+ |-- hscore: float (nullable = true)
+ |-- standarderror: float (nullable = true)
+ |-- economy: float (nullable = true)
+ |-- family: float (nullable = true)
+ |-- health: float (nullable = true)
+ |-- freedom: float (nullable = true)
+ |-- trust: float (nullable = true)
+ |-- generosity: float (nullable = true)
+ |-- dr: float (nullable = true)
+
+scala> val avgscore = spark.sql(" select country, avg(Hscore) as AverageHappinessScore from caps_proj.HWR2015 group by country order by AverageHappinessScore desc").show()
++--------------------+---------------------+                                    
+|             country|AverageHappinessScore|
++--------------------+---------------------+
+|         Switzerland|    7.586999893188477|
+|             Iceland|    7.560999870300293|
+|             Denmark|   7.5269999504089355|
+|              Norway|    7.521999835968018|
+|              Canada|    7.427000045776367|
+|             Finland|    7.406000137329102|
+|         Netherlands|    7.377999782562256|
+|              Sweden|    7.363999843597412|
+|         New Zealand|    7.285999774932861|
+|           Australia|    7.283999919891357|
+|              Israel|   7.2779998779296875|
+|          Costa Rica|     7.22599983215332|
+|             Austria|    7.199999809265137|
+|              Mexico|    7.186999797821045|
+|       United States|     7.11899995803833|
+|              Brazil|    6.982999801635742|
+|          Luxembourg|    6.946000099182129|
+|             Ireland|    6.940000057220459|
+|             Belgium|    6.936999797821045|
+|United Arab Emirates|    6.901000022888184|
++--------------------+---------------------+
+only showing top 20 rows
+
+avgscore: Unit = ()
+
+scala> val rankdf = spark.sql(" select country, Hrank from caps_proj.HWR2015")
+rankdf: org.apache.spark.sql.DataFrame = [country: string, Hrank: int]
+
+scala> rankdf.show()
++--------------------+-----+
+|             country|Hrank|
++--------------------+-----+
+|         Switzerland|    1|
+|             Iceland|    2|
+|             Denmark|    3|
+|              Norway|    4|
+|              Canada|    5|
+|             Finland|    6|
+|         Netherlands|    7|
+|              Sweden|    8|
+|         New Zealand|    9|
+|           Australia|   10|
+|              Israel|   11|
+|          Costa Rica|   12|
+|             Austria|   13|
+|              Mexico|   14|
+|       United States|   15|
+|              Brazil|   16|
+|          Luxembourg|   17|
+|             Ireland|   18|
+|             Belgium|   19|
+|United Arab Emirates|   20|
++--------------------+-----+
+only showing top 20 rows
+
+scala> val avgscore1 = spark.sql(" select country, avg(Hscore) as AverageHappinessScore from caps_proj.HWR2015 group by country order by AverageHappinessScore desc")
+avgscore1: org.apache.spark.sql.DataFrame = [country: string, AverageHappinessScore: double]
+
+scala> val rankdf1 = spark.sql(" select country, Hrank from caps_proj.HWR2015")
+rankdf1: org.apache.spark.sql.DataFrame = [country: string, Hrank: int]
+
+scala> val joinedDF = avgscore1.join(rankdf1, Seq("country"), "inner")
+joinedDF: org.apache.spark.sql.DataFrame = [country: string, AverageHappinessScore: double ... 1 more field]
+
+scala> joinedDF.show()
++--------------------+---------------------+-----+                              
+|             country|AverageHappinessScore|Hrank|
++--------------------+---------------------+-----+
+|         Switzerland|    7.586999893188477|    1|
+|             Iceland|    7.560999870300293|    2|
+|             Denmark|   7.5269999504089355|    3|
+|              Norway|    7.521999835968018|    4|
+|              Canada|    7.427000045776367|    5|
+|             Finland|    7.406000137329102|    6|
+|         Netherlands|    7.377999782562256|    7|
+|              Sweden|    7.363999843597412|    8|
+|         New Zealand|    7.285999774932861|    9|
+|           Australia|    7.283999919891357|   10|
+|              Israel|   7.2779998779296875|   11|
+|          Costa Rica|     7.22599983215332|   12|
+|             Austria|    7.199999809265137|   13|
+|              Mexico|    7.186999797821045|   14|
+|       United States|     7.11899995803833|   15|
+|              Brazil|    6.982999801635742|   16|
+|          Luxembourg|    6.946000099182129|   17|
+|             Ireland|    6.940000057220459|   18|
+|             Belgium|    6.936999797821045|   19|
+|United Arab Emirates|    6.901000022888184|   20|
++--------------------+---------------------+-----+
+only showing top 20 rows
+
+scala> val avgeco = spark.sql(" select country, avg(economy) as AverageEconomyScore from caps_proj.HWR2015 group by country order by AverageEconomyScore desc").show()
++--------------------+-------------------+                                      
+|             country|AverageEconomyScore|
++--------------------+-------------------+
+|               Qatar| 1.6904200315475464|
+|          Luxembourg| 1.5639100074768066|
+|              Kuwait| 1.5542199611663818|
+|           Singapore| 1.5218600034713745|
+|              Norway| 1.4589999914169312|
+|United Arab Emirates| 1.4272700548171997|
+|         Switzerland| 1.3965100049972534|
+|        Saudi Arabia| 1.3954099416732788|
+|       United States|   1.39451003074646|
+|           Hong Kong| 1.3860399723052979|
+|                Oman| 1.3601100444793701|
+|             Austria| 1.3372299671173096|
+|             Ireland|  1.335960030555725|
+|           Australia| 1.3335800170898438|
+|              Sweden| 1.3317099809646606|
+|         Netherlands| 1.3294399976730347|
+|             Germany| 1.3279199600219727|
+|              Canada| 1.3262900114059448|
+|             Denmark| 1.3254799842834473|
+|             Bahrain| 1.3237600326538086|
++--------------------+-------------------+
+only showing top 20 rows
+
+avgeco: Unit = ()
+
+scala> val avgfreedom = spark.sql(" select country, avg(freedom) as AverageFreedomScore from caps_proj.HWR2015 group by country order by AverageFreedomScore desc").show()
++--------------------+-------------------+                                      
+|             country|AverageFreedomScore|
++--------------------+-------------------+
+|              Norway|  0.669730007648468|
+|         Switzerland| 0.6655700206756592|
+|            Cambodia| 0.6624600291252136|
+|              Sweden| 0.6597999930381775|
+|          Uzbekistan| 0.6582099795341492|
+|           Australia| 0.6512399911880493|
+|             Denmark| 0.6493800282478333|
+|             Finland| 0.6416900157928467|
+|United Arab Emirates|  0.641569972038269|
+|               Qatar| 0.6403999924659729|
+|         New Zealand| 0.6393799781799316|
+|          Costa Rica| 0.6337599754333496|
+|              Canada| 0.6329699754714966|
+|                Oman| 0.6327400207519531|
+|             Iceland| 0.6287699937820435|
+|         Philippines| 0.6254500150680542|
+|             Austria| 0.6243299841880798|
+|             Ireland| 0.6177700161933899|
+|          Luxembourg| 0.6158300042152405|
+|         Netherlands| 0.6157600283622742|
++--------------------+-------------------+
+only showing top 20 rows
+
+avgfreedom: Unit = ()
+
+scala> val avgfamily = spark.sql(" select country, avg(family) as AverageFamilyScore from caps_proj.HWR2015 group by country order by AverageFamilyScore desc")
+avgfamily: org.apache.spark.sql.DataFrame = [country: string, AverageFamilyScore: double]
+
+scala> avgfamily.show()
++--------------+------------------+                                             
+|       country|AverageFamilyScore|
++--------------+------------------+
+|       Iceland|1.4022300243377686|
+|       Ireland| 1.369480013847351|
+|       Denmark|1.3605799674987793|
+|   Switzerland|1.3495099544525146|
+|    Uzbekistan|1.3404300212860107|
+|        Norway|1.3309500217437744|
+|        Canada|1.3226100206375122|
+|   New Zealand|1.3196699619293213|
+|       Finland|1.3182599544525146|
+|         Spain| 1.313789963722229|
+|     Australia|1.3092299699783325|
+|      Paraguay|1.3047699928283691|
+|         Malta|1.3020299673080444|
+|      Mongolia|1.3006000518798828|
+|       Germany|1.2993700504302979|
+|       Austria|1.2970399856567383|
+|        Sweden|1.2890700101852417|
+|       Belgium|1.2856600284576416|
+|United Kingdom|  1.28548002243042|
+|   Netherlands|  1.28016996383667|
++--------------+------------------+
+only showing top 20 rows
+
+scala> val avghealth = spark.sql(" select country, avg(health) as AverageHealthScore from caps_proj.HWR2015 group by country order by AverageHealthScore desc").show()
++--------------+------------------+                                             
+|       country|AverageHealthScore|
++--------------+------------------+
+|     Singapore|  1.02524995803833|
+|     Hong Kong|1.0132800340652466|
+|         Japan|0.9911100268363953|
+|   South Korea|0.9653800129890442|
+|         Spain|0.9556199908256531|
+|         Italy|0.9544600248336792|
+|       Iceland|0.9478399753570557|
+|        France|0.9457899928092957|
+|   Switzerland|0.9414299726486206|
+|     Australia|0.9315599799156189|
+|  North Cyprus|0.9235600233078003|
+|        Cyprus|0.9235600233078003|
+|    Luxembourg| 0.918940007686615|
+|        Israel|0.9138699769973755|
+|        Sweden|0.9108700156211853|
+|United Kingdom|0.9094300270080566|
+|   New Zealand|0.9083700180053711|
+|        Canada|0.9056299924850464|
+|       Belgium|0.8966699838638306|
+|       Ireland| 0.895330011844635|
++--------------+------------------+
+only showing top 20 rows
+
+avghealth: Unit = ()
+
+scala> val avgtrust = spark.sql(" select country, avg(trust) as AverageTrustScore from caps_proj.HWR2015 group by country order by AverageTrustScore desc").show()
++--------------------+-------------------+                                      
+|             country|  AverageTrustScore|
++--------------------+-------------------+
+|              Rwanda| 0.5519099831581116|
+|               Qatar| 0.5220800042152405|
+|           Singapore| 0.4921000003814697|
+|             Denmark|0.48357000946998596|
+|              Sweden| 0.4384399950504303|
+|         New Zealand| 0.4292199909687042|
+|         Switzerland| 0.4197799861431122|
+|             Finland| 0.4137200117111206|
+|   Somaliland region|0.39928001165390015|
+|United Arab Emirates|0.38582998514175415|
+|             Georgia| 0.3833099901676178|
+|          Luxembourg|0.37797999382019043|
+|           Hong Kong| 0.3712399899959564|
+|              Norway| 0.3650299906730652|
+|           Australia| 0.3563700020313263|
+|              Canada| 0.3295699954032898|
+|                Oman|0.32523998618125916|
+|        Saudi Arabia|0.32523998618125916|
+|      United Kingdom| 0.3206700086593628|
+|         Netherlands| 0.3181400001049042|
++--------------------+-------------------+
+only showing top 20 rows
+
+avgtrust: Unit = ()
+
+scala> val avggenerosity = spark.sql(" select country, avg(generosity) as AverageGenerosityScore from caps_proj.HWR2015 group by country order by AverageGenerosityScore desc").show()
++-----------------+----------------------+                                      
+|          country|AverageGenerosityScore|
++-----------------+----------------------+
+|          Myanmar|    0.7958800196647644|
+|         Thailand|    0.5763000249862671|
+|   United Kingdom|    0.5191199779510498|
+|            Malta|     0.517520010471344|
+|        Indonesia|    0.5153499841690063|
+|Somaliland region|    0.5031800270080566|
+|           Bhutan|    0.4799799919128418|
+|      Netherlands|   0.47609999775886536|
+|      New Zealand|    0.4750100076198578|
+|            Syria|   0.47178998589515686|
+|            Haiti|     0.461870014667511|
+|          Ireland|    0.4590100049972534|
+|           Canada|    0.4581100046634674|
+|          Iceland|   0.43630000948905945|
+|        Australia|    0.4356200098991394|
+|             Laos|    0.4219200015068054|
+|        Sri Lanka|   0.40827998518943787|
+|         Cambodia|   0.40358999371528625|
+|    United States|   0.40105000138282776|
+|        Hong Kong|    0.3947800099849701|
++-----------------+----------------------+
+only showing top 20 rows
+
+avggenerosity: Unit = ()
+
+scala> fivedf.select("region").distinct().show()
++--------------------+                                                          
+|              region|
++--------------------+
+|Middle East and N...|
+|  Sub-Saharan Africa|
+|Australia and New...|
+|       North America|
+|       Southern Asia|
+|Latin America and...|
+|      Western Europe|
+|Central and Easte...|
+|        Eastern Asia|
+|   Southeastern Asia|
++--------------------+
+
+scala> fivedf.createOrReplaceTempView("HWR2015")
+
+scala> spark.sql("SELECT AVG(Hscore) AS AvgScore, MIN(Hscore) AS MinScore, MAX(Hscore) AS MaxScore FROM HWR2015").show()
++-----------------+--------+--------+
+|         AvgScore|MinScore|MaxScore|
++-----------------+--------+--------+
+|5.375734169271928|   2.839|   7.587|
++-----------------+--------+--------+
+
+scala> spark.sql("SELECT region, count(region) from HWR2015 group by region").show()
++--------------------+-------------+                                            
+|              region|count(region)|
++--------------------+-------------+
+|Middle East and N...|           20|
+|  Sub-Saharan Africa|           40|
+|Australia and New...|            2|
+|       North America|            2|
+|       Southern Asia|            7|
+|Latin America and...|           22|
+|      Western Europe|           21|
+|Central and Easte...|           29|
+|        Eastern Asia|            6|
+|   Southeastern Asia|            9|
++--------------------+-------------+
+
+scala> spark.sql("SELECT region, AVG(Hscore) AS AvgScore FROM HWR2015 GROUP BY region ORDER BY AvgScore DESC").show()
++--------------------+------------------+                                       
+|              region|          AvgScore|
++--------------------+------------------+
+|Australia and New...| 7.284999847412109|
+|       North America| 7.273000001907349|
+|      Western Europe| 6.689619018917992|
+|Latin America and...| 6.144681822169911|
+|        Eastern Asia| 5.626166661580403|
+|Middle East and N...| 5.406900000572205|
+|Central and Easte...| 5.332931025274869|
+|   Southeastern Asia|5.3174444569481745|
+|       Southern Asia| 4.580857038497925|
+|  Sub-Saharan Africa| 4.202800011634826|
++--------------------+------------------+
+
+scala> spark.sql("SELECT region, AVG(economy) AS AvgEconomy FROM HWR2015 GROUP BY region ORDER BY AvgEconomy DESC").show()
++--------------------+-------------------+                                      
+|              region|         AvgEconomy|
++--------------------+-------------------+
+|       North America| 1.3604000210762024|
+|      Western Europe| 1.2985957122984386|
+|Australia and New...| 1.2918800115585327|
+|        Eastern Asia| 1.1517799993356068|
+|Middle East and N...| 1.0669735074043274|
+|Central and Easte...| 0.9424382725666309|
+|Latin America and...|  0.876815451817079|
+|   Southeastern Asia|  0.789054446750217|
+|       Southern Asia| 0.5604857206344604|
+|  Sub-Saharan Africa|0.38047300176694987|
++--------------------+-------------------+
+
+scala> spark.sql("SELECT region, AVG(family) AS AvgFamily FROM HWR2015 GROUP BY region ORDER BY AvgFamily DESC").show()
++--------------------+------------------+                                       
+|              region|         AvgFamily|
++--------------------+------------------+
+|Australia and New...| 1.314449965953827|
+|       North America|1.2848600149154663|
+|      Western Europe| 1.247301907766433|
+|Latin America and...|1.1047204516150735|
+|        Eastern Asia|1.0994266668955486|
+|Central and Easte...|1.0530424159148644|
+|   Southeastern Asia|0.9404677748680115|
+|Middle East and N...|0.9204900145530701|
+|  Sub-Saharan Africa|0.8090849950909614|
+|       Southern Asia|0.6453214287757874|
++--------------------+------------------+
+
+scala> spark.sql("SELECT region, AVG(health) AS AvgHealth FROM HWR2015 GROUP BY region ORDER BY AvgHealth DESC").show()
++--------------------+------------------+                                       
+|              region|         AvgHealth|
++--------------------+------------------+
+|Australia and New...| 0.919964998960495|
+|      Western Europe|0.9091481027149019|
+|       North America|0.8837099969387054|
+|        Eastern Asia|0.8773883481820425|
+|Central and Easte...|0.7187737966405934|
+|Middle East and N...|0.7056155025959014|
+|Latin America and...|0.7038704590363936|
+|   Southeastern Asia|0.6773566636774275|
+|       Southern Asia|0.5408300033637455|
+|  Sub-Saharan Africa|0.2823317493312061|
++--------------------+------------------+
+
+scala> spark.sql("SELECT region, AVG(freedom) AS AvgFreedom FROM HWR2015 GROUP BY region ORDER BY AvgFreedom DESC").show()
++--------------------+-------------------+                                      
+|              region|         AvgFreedom|
++--------------------+-------------------+
+|Australia and New...| 0.6453099846839905|
+|       North America| 0.5895049870014191|
+|   Southeastern Asia| 0.5571044484774271|
+|      Western Europe| 0.5499261926327433|
+|Latin America and...| 0.5017395439473066|
+|        Eastern Asia| 0.4624899973471959|
+|       Southern Asia|0.37333714429821285|
+|  Sub-Saharan Africa|0.36594400126487014|
+|Middle East and N...|0.36175099909305575|
+|Central and Easte...|0.35826861935442894|
++--------------------+-------------------+
+
+scala> spark.sql("SELECT region, AVG(trust) AS AvgTrust FROM HWR2015 GROUP BY region ORDER BY AvgTrust DESC").show()
++--------------------+-------------------+                                      
+|              region|           AvgTrust|
++--------------------+-------------------+
+|Australia and New...|0.39279499650001526|
+|       North America|0.24423499405384064|
+|      Western Europe|0.23146285702075278|
+|Middle East and N...|  0.181701997295022|
+|   Southeastern Asia| 0.1512755552927653|
+|        Eastern Asia|0.12769499886780977|
+|  Sub-Saharan Africa|0.12387774931266904|
+|Latin America and...|0.11717181707817045|
+|       Southern Asia|0.10253571293183736|
+|Central and Easte...|0.08667379262825024|
++--------------------+-------------------+
+
+scala> spark.sql("SELECT region, AVG(generosity) AS AvgGenerosity FROM HWR2015 GROUP BY region ORDER BY AvgGenerosity DESC").show()
++--------------------+-------------------+                                      
+|              region|      AvgGenerosity|
++--------------------+-------------------+
+|Australia and New...| 0.4553150087594986|
+|       North America| 0.4295800030231476|
+|   Southeastern Asia| 0.4192611111534966|
+|       Southern Asia| 0.3414285672562463|
+|      Western Europe| 0.3021085688046047|
+|        Eastern Asia|0.22588500504692396|
+|  Sub-Saharan Africa|0.22113675121217966|
+|Latin America and...|0.21778772856024178|
+|Middle East and N...| 0.1903754983097315|
+|Central and Easte...| 0.1522637947446442|
++--------------------+-------------------+
+
+scala> spark.sql("SELECT corr(hscore,standarderror) AS Happiness_Correlation FROM HWR2015").show()
++---------------------+
+|Happiness_Correlation|
++---------------------+
+| -0.17725378568434827|
++---------------------+
+
+
